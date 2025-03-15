@@ -1,5 +1,25 @@
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 
+# 设置CMake策略CMP0144，允许使用大写的<PACKAGENAME>_ROOT变量
+if(POLICY CMP0144)
+  cmake_policy(SET CMP0144 NEW)
+endif()
+
+if(NOT DEFINED ENV{VCPKG_ROOT})
+    set(VCPKG_ROOT "D:/vcpkg")
+else()
+    set(VCPKG_ROOT $ENV{VCPKG_ROOT})
+endif()
+
+set(VCPKG_ROOT "D:/3DCAM/vcpkg-master/vcpkg-master")
+message(STATUS "VCPKG_ROOT: $ENV{VCPKG_ROOT}")
+set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+set(CUDAToolkit_ROOT "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.4/")
+
+# 添加vcpkg安装目录到CMAKE_PREFIX_PATH
+list(APPEND CMAKE_PREFIX_PATH "${VCPKG_ROOT}/installed/x64-windows")
+list(APPEND CMAKE_PREFIX_PATH "${VCPKG_ROOT}/installed/x64-windows/share")
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
 include(DefaultOptions)
 include(ConfigureVcpkg)
@@ -40,10 +60,16 @@ option(MESHLIB_BUILD_MRMESH_PY_LEGACY "Build legacy Python bindings for MRMesh" 
 option(MESHLIB_BUILD_MESHCONV "Build meshconv utility" ON)
 option(MESHLIB_EXPERIMENTAL_BUILD_C_BINDING "(experimental) Build C binding library" ON)
 option(MESHLIB_BUILD_SYMBOLMESH "Build symbol-to-mesh library" ON)
+##禁用了MRVoxels组件
 option(MESHLIB_BUILD_VOXELS "Build voxels library" ON)
 option(MESHLIB_BUILD_EXTRA_IO_FORMATS "Build extra IO format support library" ON)
 
+# 添加一个选项，允许用户完全禁用依赖于OpenVDB的功能
+option(MESHLIB_USE_OPENVDB "Use OpenVDB library if available" ON)
+
 option(MESHLIB_BUILD_MRCUDA "Build MRCuda library" ON)
+###实验性功能，用于在MRCuda库中使用HIP工具包而不是CUDA。
+###HIP (Heterogeneous-Computing Interface for Portability) 是AMD开发的一个C++运行时API和编程模型，允许开发者编写能够在AMD和NVIDIA GPU上运行的代码。
 option(MESHLIB_EXPERIMENTAL_HIP "(experimental) Use HIP toolkit for MRCuda library" OFF)
 IF(MR_EMSCRIPTEN OR APPLE)
   set(MESHLIB_BUILD_MRCUDA OFF)
