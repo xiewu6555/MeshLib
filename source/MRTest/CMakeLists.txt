@@ -46,22 +46,54 @@ ELSE()
     )
   ELSEIF(WIN32 OR MESHLIB_USE_VCPKG)
     find_package(GTest REQUIRED)
-    find_package(OpenVDB REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PRIVATE
-      MRMesh
-      MRIOExtras
-      MRPython
-      MREmbeddedPython
-      MRViewer
-      JsonCpp::JsonCpp
-      fmt::fmt
-      GTest::gtest
-      spdlog::spdlog
-      pybind11nonlimitedapi_stubs
-      OpenVDB::openvdb
-      TBB::tbb
-      ${CMAKE_DL_LIBS}
-    )
+    
+    if(MESHLIB_USE_OPENVDB)
+      find_package(OpenVDB QUIET)
+      if(OpenVDB_FOUND)
+        add_compile_definitions(MR_USE_OPENVDB)
+        target_link_libraries(${PROJECT_NAME} PRIVATE
+          MRMesh
+          MRIOExtras
+          MRPython
+          MREmbeddedPython
+          MRViewer
+          JsonCpp::JsonCpp
+          fmt::fmt
+          GTest::gtest
+          spdlog::spdlog
+          pybind11nonlimitedapi_stubs
+          OpenVDB::openvdb
+        )
+      else()
+        message(WARNING "OpenVDB not found. Some functionality in MRTest will be disabled.")
+        target_link_libraries(${PROJECT_NAME} PRIVATE
+          MRMesh
+          MRIOExtras
+          MRPython
+          MREmbeddedPython
+          MRViewer
+          JsonCpp::JsonCpp
+          fmt::fmt
+          GTest::gtest
+          spdlog::spdlog
+          pybind11nonlimitedapi_stubs
+        )
+      endif()
+    else()
+      message(STATUS "OpenVDB support is disabled by MESHLIB_USE_OPENVDB option in MRTest.")
+      target_link_libraries(${PROJECT_NAME} PRIVATE
+        MRMesh
+        MRIOExtras
+        MRPython
+        MREmbeddedPython
+        MRViewer
+        JsonCpp::JsonCpp
+        fmt::fmt
+        GTest::gtest
+        spdlog::spdlog
+        pybind11nonlimitedapi_stubs
+      )
+    endif()
     IF(NOT WIN32)
       target_link_libraries(${PROJECT_NAME} PRIVATE Python::Python )
     ENDIF()
