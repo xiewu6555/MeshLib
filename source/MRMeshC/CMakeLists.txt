@@ -17,8 +17,13 @@ ENDIF()
 target_link_libraries(${PROJECT_NAME} PRIVATE
   MRMesh
   MRIOExtras
-  MRVoxels
 )
+
+if(MESHLIB_BUILD_VOXELS)
+  target_link_libraries(${PROJECT_NAME} PRIVATE MRVoxels)
+else()
+  target_compile_definitions(${PROJECT_NAME} PRIVATE MESHLIB_NO_VOXELS)
+endif()
 
 set(CMAKE_INSTALL_PREFIX "/Library/Frameworks")
 install(

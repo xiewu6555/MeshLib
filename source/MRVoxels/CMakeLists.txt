@@ -54,16 +54,41 @@ ELSEIF(APPLE)
     ${MRVOXELS_OPTIONAL_DEPENDENCIES}
   )
 ELSEIF(WIN32 OR MESHLIB_USE_VCPKG)
-  find_package(OpenVDB REQUIRED)
-  target_link_libraries(${PROJECT_NAME} PRIVATE
-    MRMesh
-    OpenVDB::openvdb
-    fmt::fmt
-    spdlog::spdlog
-    JsonCpp::JsonCpp
-    TBB::tbb
-    ${MRVOXELS_OPTIONAL_DEPENDENCIES}
-  )
+  if(MESHLIB_USE_OPENVDB)
+    find_package(OpenVDB QUIET)
+    if(OpenVDB_FOUND)
+      target_link_libraries(${PROJECT_NAME} PRIVATE
+        MRMesh
+        OpenVDB::openvdb
+        fmt::fmt
+        spdlog::spdlog
+        JsonCpp::JsonCpp
+        TBB::tbb
+        ${MRVOXELS_OPTIONAL_DEPENDENCIES}
+      )
+      target_compile_definitions(${PROJECT_NAME} PRIVATE MR_USE_OPENVDB)
+    else()
+      message(WARNING "OpenVDB not found. Some functionality will be disabled.")
+      target_link_libraries(${PROJECT_NAME} PRIVATE
+        MRMesh
+        fmt::fmt
+        spdlog::spdlog
+        JsonCpp::JsonCpp
+        TBB::tbb
+        ${MRVOXELS_OPTIONAL_DEPENDENCIES}
+      )
+    endif()
+  else()
+    message(STATUS "OpenVDB support is disabled by MESHLIB_USE_OPENVDB option.")
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+      MRMesh
+      fmt::fmt
+      spdlog::spdlog
+      JsonCpp::JsonCpp
+      TBB::tbb
+      ${MRVOXELS_OPTIONAL_DEPENDENCIES}
+    )
+  endif()
 ELSE()
   target_link_libraries(${PROJECT_NAME} PRIVATE
     MRMesh

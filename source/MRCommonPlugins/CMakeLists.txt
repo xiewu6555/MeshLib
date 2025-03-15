@@ -35,21 +35,51 @@ IF(MR_EMSCRIPTEN)
   )
 ELSEIF(WIN32 OR MESHLIB_USE_VCPKG)
   find_package(glad REQUIRED)
-  find_package(OpenVDB REQUIRED)
-
-  target_link_libraries(${PROJECT_NAME} PRIVATE
-    TBB::tbb
-    MRMesh
-    MRIOExtras
-    MRViewer
-    glad::glad
-    glfw
-    imgui
-    JsonCpp::JsonCpp
-    OpenVDB::openvdb
-    spdlog::spdlog
-    fmt::fmt
-  )
+  
+  if(MESHLIB_USE_OPENVDB)
+    find_package(OpenVDB QUIET)
+    if(OpenVDB_FOUND)
+      add_compile_definitions(MR_USE_OPENVDB)
+      target_link_libraries(${PROJECT_NAME} PRIVATE
+        TBB::tbb
+        MRMesh
+        MRIOExtras
+        MRViewer
+        glad::glad
+        glfw
+        imgui
+        JsonCpp::JsonCpp
+        OpenVDB::openvdb
+        spdlog::spdlog
+      )
+    else()
+      message(WARNING "OpenVDB not found. Some functionality in MRCommonPlugins will be disabled.")
+      target_link_libraries(${PROJECT_NAME} PRIVATE
+        TBB::tbb
+        MRMesh
+        MRIOExtras
+        MRViewer
+        glad::glad
+        glfw
+        imgui
+        JsonCpp::JsonCpp
+        spdlog::spdlog
+      )
+    endif()
+  else()
+    message(STATUS "OpenVDB support is disabled by MESHLIB_USE_OPENVDB option in MRCommonPlugins.")
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+      TBB::tbb
+      MRMesh
+      MRIOExtras
+      MRViewer
+      glad::glad
+      glfw
+      imgui
+      JsonCpp::JsonCpp
+      spdlog::spdlog
+    )
+  endif()
   IF(NOT WIN32)
     find_package(clip REQUIRED)
     target_link_libraries(${PROJECT_NAME} PRIVATE clip::clip)
