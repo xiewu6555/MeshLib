@@ -18,6 +18,10 @@ ENDIF()
 file(GLOB SOURCES "*.cpp")
 file(GLOB HEADERS "*.h" "*.hpp")
 
+# 确保新文件被明确包含
+list(APPEND SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/MRDisk.cpp")
+list(APPEND HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/MRDisk.h")
+
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config_cmake.h.in ${CMAKE_CURRENT_SOURCE_DIR}/config_cmake.h)

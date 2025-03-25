@@ -1,0 +1,5 @@
+#pragma once
+
+// 此文件由CMake自动生成，请勿手动修改
+// 注册的插件列表
+#define MR_VIEWER_PLUGINS_LIST @MR_VIEWER_PLUGINS@ 
