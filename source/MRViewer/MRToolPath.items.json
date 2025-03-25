@@ -1,0 +1,10 @@
+{
+    "Items": [
+        {
+            "Name": "CAM Tool Path",
+            "Caption": "CAM Tool Path",
+            "Tooltip": "生成和管理CAM加工工具路径，支持分层、等高、等余量等多种路径生成策略",
+            "Icon": "\uF44C"
+        }
+    ]
+}
