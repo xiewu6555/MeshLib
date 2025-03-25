@@ -1,5 +1,8 @@
 #pragma once
 
+#include <array>
+#include <utility>
+#include <cstddef>
 #include "config.h"
 
 #include "MRMesh/MRCanonicalTypedefs.h"

@@ -1,12 +1,12 @@
 ---
-description: 
+description: agent rule
 globs: 
 alwaysApply: false
 ---
 ---
 description: agent模式下通用的规则
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 
 # Your rule content

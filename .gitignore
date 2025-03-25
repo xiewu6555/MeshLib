@@ -34,6 +34,7 @@ source/MRDotNetTest/obj/*
 /lib64
 /include
 /out/build/
+/model/
 .cache
 venv/*
 wheelhouse/*
