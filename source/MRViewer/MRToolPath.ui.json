@@ -1,0 +1,20 @@
+{
+    "Order": 50,
+    "LibName": "MRViewer",
+    "Tabs": [
+        {
+            "Name": "Mesh",
+            "Priority": 3,
+            "Groups": [
+                {
+                    "Name": "CAM",
+                    "List": [
+                        {
+                            "Name": "CAM Tool Path"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
