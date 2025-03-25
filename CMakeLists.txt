@@ -1,5 +1,17 @@
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 
+if(MSVC)
+  # 选择一个Windows SDK版本（建议使用已安装的最新版本）
+  set(CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION "10.0.22621.0")
+
+  # 或者更精确地控制包含路径
+  set(WINDOWS_SDK_INCLUDE_DIR "C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0")
+  include_directories(SYSTEM "${WINDOWS_SDK_INCLUDE_DIR}/ucrt")
+  include_directories(SYSTEM "${WINDOWS_SDK_INCLUDE_DIR}/um")
+  include_directories(SYSTEM "${WINDOWS_SDK_INCLUDE_DIR}/shared")
+endif()
+
+
 # 设置CMake策略CMP0144，允许使用大写的<PACKAGENAME>_ROOT变量
 if(POLICY CMP0144)
   cmake_policy(SET CMP0144 NEW)

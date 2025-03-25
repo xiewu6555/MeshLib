@@ -204,3 +204,33 @@ install(
 IF(MR_PCH)
   TARGET_PRECOMPILE_HEADERS(${PROJECT_NAME} REUSE_FROM MRPch)
 ENDIF()
+
+# ToolPath Plugin
+set(MR_VIEWER_TOOLPATH_PLUGIN_HEADERS
+    MRToolPathPlugin.h
+)
+
+set(MR_VIEWER_TOOLPATH_PLUGIN_SOURCES
+    MRToolPathPlugin.cpp
+)
+
+target_sources(${PROJECT_NAME} PRIVATE ${MR_VIEWER_TOOLPATH_PLUGIN_HEADERS} ${MR_VIEWER_TOOLPATH_PLUGIN_SOURCES})
+
+# 添加依赖库
+find_package(spdlog REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
+
+# 如果有其他依赖库如CGAL、OpenCASCADE等，也需要在这里添加
+
+# 安装头文件
+install(FILES ${MR_VIEWER_TOOLPATH_PLUGIN_HEADERS} DESTINATION "${MR_INSTALL_INCLUDE_DIR}/${PROJECT_NAME}")
+
+# 为IDE创建分组
+source_group("Plugin\\ToolPath" FILES ${MR_VIEWER_TOOLPATH_PLUGIN_HEADERS} ${MR_VIEWER_TOOLPATH_PLUGIN_SOURCES})
+
+# 将插件添加到全局插件列表
+list(APPEND MR_VIEWER_PLUGINS "ToolPathPlugin")
+set(MR_VIEWER_PLUGINS ${MR_VIEWER_PLUGINS} PARENT_SCOPE)
+
+# 注册插件信息到编译配置
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/MRViewerPluginsList.h.in" "${CMAKE_CURRENT_BINARY_DIR}/MRViewerPluginsList.h" @ONLY)
