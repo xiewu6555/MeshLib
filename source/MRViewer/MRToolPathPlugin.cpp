@@ -1,6 +1,6 @@
 #include "MRToolPathPlugin.h"
 #include <array> // 显式包含array头文件
-#include "../../build/MRViewer/MRViewerPluginsList.h"  // 使用正确的相对路径
+#include "../build/MRViewer/MRViewerPluginsList.h"  // 使用相对于源代码根目录的路径
 #include "MRViewer.h"
 #include "MRViewer/MRRibbonConstants.h"
 #include "MRViewer/MRViewer.h"
@@ -35,6 +35,8 @@
 #include "MRMesh/MRTorus.h"
 #include "MRMesh/MRMeshFwd.h" // 包含ThreeVertIds的定义
 #include "MRMesh/MRDisk.h" // 添加对新创建的MRDisk.h的引用
+#include "MRRibbonSchema.h"
+#include "MRUIStyle.h"
 
 #include <chrono>
 #include <fstream>
@@ -226,7 +228,7 @@ namespace MR
 {
 
 // 注册插件
-MRVIEWER_PLUGIN_REGISTRATION(ToolPathPlugin)
+MR_REGISTER_RIBBON_ITEM(ToolPathPlugin)
 
 // ImGui帮助标记函数实现（在参数旁边显示问号图标，鼠标悬停时显示帮助文本）
 void ToolPathPlugin::HelpMarker(const char* desc)
@@ -243,8 +245,11 @@ void ToolPathPlugin::HelpMarker(const char* desc)
 }
 
 // 工具路径插件初始化
-ToolPathPlugin::ToolPathPlugin() : StatePlugin("ToolPathPlugin")
+ToolPathPlugin::ToolPathPlugin() : StatePlugin("CAM Tool Path")
 {
+    // 设置Tab分类
+    tab_ = StatePluginTabs::Mesh;
+    
     // 初始化工具路径参数
     toolPathParams_.millRadius = 3.0f;
     toolPathParams_.voxelSize = 0.5f;
@@ -306,10 +311,32 @@ ToolPathPlugin::~ToolPathPlugin()
 // 显示插件主界面
 void ToolPathPlugin::drawDialog(float menuScaling, ImGuiContext* /*ctx*/)
 {
-    // 绘制主面板
-    drawMainPanel(menuScaling);
+    auto menuWidth = 400.0f * menuScaling;
+
+    // 计算居中位置
+    ImVec2 position{ (viewer->framebufferSize.x - menuWidth) / 2, viewer->framebufferSize.y / 6.0f };
     
-    // 绘制状态消息
+    // 使用StatePlugin基类提供的ImGuiBeginWindow_函数
+    if (!ImGuiBeginWindow_({ .width = menuWidth, .position = &position, .menuScaling = menuScaling }))
+        return;
+
+    // 使用ImGui TabBar绘制选项卡
+    if (UI::beginTabBar("##MainTabs"))
+    {
+        if (UI::beginTabItem("Tool Path"))
+        {
+            // 调用现有的drawMainPanel函数，避免代码重复
+            drawMainPanel(menuScaling);
+            
+            UI::endTabItem();
+        }
+        UI::endTabBar();
+    }
+
+    // 使用正确的结束函数
+    ImGui::EndCustomStatePlugin();
+    
+    // 绘制状态消息（这应该是独立的窗口）
     drawStatusMessages(menuScaling);
 }
 
@@ -354,48 +381,45 @@ void ToolPathPlugin::showToolPathInfo(const std::vector<PluginGCommand>* command
 // 绘制主面板
 void ToolPathPlugin::drawMainPanel(float menuScaling)
 {
-    if (ImGui::Begin("工具路径生成", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    // 移除之前的Begin/End调用，因为这些已经在drawDialog中处理
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * 0.6f);
+    
+    if (ImGui::CollapsingHeader("模型选择", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.6f);
-        
-        if (ImGui::CollapsingHeader("模型选择", ImGuiTreeNodeFlags_DefaultOpen))
-        {
-            drawModelSelectionPanel(menuScaling);
-        }
-        
-        if (ImGui::CollapsingHeader("刀具设置", ImGuiTreeNodeFlags_DefaultOpen))
-        {
-            drawToolPanel(menuScaling);
-        }
-        
-        if (ImGui::CollapsingHeader("算法设置", ImGuiTreeNodeFlags_DefaultOpen))
-        {
-            drawAlgorithmPanel(menuScaling);
-        }
-        
-        if (ImGui::CollapsingHeader("路径生成", ImGuiTreeNodeFlags_DefaultOpen))
-        {
-            drawPathGenerationPanel(menuScaling);
-        }
-        
-        if (ImGui::CollapsingHeader("动画控制", ImGuiTreeNodeFlags_DefaultOpen))
-        {
-            drawAnimationPanel(menuScaling);
-        }
-        
-        if (ImGui::CollapsingHeader("多视图设置", ImGuiTreeNodeFlags_DefaultOpen))
-        {
-            drawMultiViewPanel(menuScaling);
-        }
-        
-        if (ImGui::CollapsingHeader("路径分析", ImGuiTreeNodeFlags_DefaultOpen))
-        {
-            drawAnalysisPanel(menuScaling);
-        }
-        
-        ImGui::PopItemWidth();
+        drawModelSelectionPanel(menuScaling);
     }
-    ImGui::End();
+    
+    if (ImGui::CollapsingHeader("刀具设置", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        drawToolPanel(menuScaling);
+    }
+    
+    if (ImGui::CollapsingHeader("算法设置", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        drawAlgorithmPanel(menuScaling);
+    }
+    
+    if (ImGui::CollapsingHeader("路径生成", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        drawPathGenerationPanel(menuScaling);
+    }
+    
+    if (ImGui::CollapsingHeader("动画控制", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        drawAnimationPanel(menuScaling);
+    }
+    
+    if (ImGui::CollapsingHeader("多视图设置", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        drawMultiViewPanel(menuScaling);
+    }
+    
+    if (ImGui::CollapsingHeader("路径分析", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        drawAnalysisPanel(menuScaling);
+    }
+    
+    ImGui::PopItemWidth();
 }
 
 // 绘制模型选择面板
@@ -1532,24 +1556,24 @@ std::shared_ptr<Object> ToolPathPlugin::createToolModel(ToolType type, float rad
 }
 
 // 实现虚函数
-bool MR::ToolPathPlugin::onEnable_()
+bool ToolPathPlugin::onEnable_()
 {
     // 插件启用时的处理逻辑
     // 例如：初始化资源，设置初始状态等
-    addStatusMessage("工具路径插件已启用", StatusMessage::Type::Info);
+    addStatusMessage("Toolpath plugin is enabled", StatusMessage::Type::Info);
     return true;
 }
 
-bool MR::ToolPathPlugin::onDisable_()
+bool ToolPathPlugin::onDisable_()
 {
     // 插件禁用时的处理逻辑
     // 例如：清理资源，恢复状态等
-    addStatusMessage("工具路径插件已禁用", StatusMessage::Type::Info);
+    addStatusMessage("Toolpath plugin is disabled", StatusMessage::Type::Info);
     return true;
 }
 
 // 实现其他成员函数
-bool MR::ToolPathPlugin::generateCurrentToolPath()
+bool ToolPathPlugin::generateCurrentToolPath()
 {
     // 根据当前选择的算法生成工具路径
     switch (selectedAlgorithm_)
@@ -1568,7 +1592,7 @@ bool MR::ToolPathPlugin::generateCurrentToolPath()
     }
 }
 
-void MR::ToolPathPlugin::startAnimation()
+void ToolPathPlugin::startAnimation()
 {
     // 开始动画的逻辑
     if (!animating_)
@@ -1580,7 +1604,7 @@ void MR::ToolPathPlugin::startAnimation()
     }
 }
 
-void MR::ToolPathPlugin::stopAnimation()
+void ToolPathPlugin::stopAnimation()
 {
     // 停止动画的逻辑
     if (animating_)
@@ -1590,7 +1614,7 @@ void MR::ToolPathPlugin::stopAnimation()
     }
 }
 
-float MR::ToolPathPlugin::calculatePathLength(const std::vector<PluginGCommand>* commands)
+float ToolPathPlugin::calculatePathLength(const std::vector<PluginGCommand>* commands)
 {
     if (!commands || commands->empty())
         return 0.0f;
