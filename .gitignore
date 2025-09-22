@@ -35,13 +35,6 @@ source/MRDotNetTest/obj/*
 /include
 /out/build/
 /model/
-.cache
-venv/*
-wheelhouse/*
-/source/MeshLibC2/include
-/source/MeshLibC2/src
-/source/MeshLibC2/temp
-compile_commands.json
 
 # vcpkg 本地安装目录（项目独立配置）
 vcpkg/
