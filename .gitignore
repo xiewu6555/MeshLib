@@ -46,3 +46,4 @@ vcpkg_installed/
 thirdparty/
 build_debug/
 thirdparty_build/
+docs/

@@ -33,7 +33,13 @@ ELSE() # NOT MR_EMSCRIPTEN
   target_link_libraries(${PROJECT_NAME} PRIVATE
     MRViewer
     MRMesh
+    # Link MRCommonPlugins to ensure it is loaded before menu initialization (registers ribbon items early)
+    MRCommonPlugins
   )
+  # Ensure MRCommonPlugins.dll is built together with MeshViewer (runtime-loaded plugin)
+  if(TARGET MRCommonPlugins)
+    add_dependencies(${PROJECT_NAME} MRCommonPlugins)
+  endif()
 ENDIF() # MR_EMSCRIPTEN
 # 配置运行时依赖 DLL 拷贝（仅限 Windows）
 IF(WIN32 AND NOT MR_EMSCRIPTEN)

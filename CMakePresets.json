@@ -24,7 +24,7 @@
         "MESHLIB_BUILD_MESHVIEWER": "ON",
         "MESHLIB_BUILD_VOXELS": "ON",
 
-        "MRIOEXTRAS_NO_STEP": "OFF",
+        "MRIOEXTRAS_NO_STEP": "ON",
         "MRIOEXTRAS_NO_3MF": "ON",
         "MRIOEXTRAS_NO_E57": "ON",
         "MRIOEXTRAS_NO_JPEG": "ON",
@@ -64,7 +64,8 @@
       "configurePreset": "viewer-debug",
       "configuration": "Debug",
       "targets": [
-        "MeshViewer"
+        "MeshViewer",
+        "MRCommonPlugins"
       ],
       "jobs": 8
     },
@@ -73,7 +74,8 @@
       "configurePreset": "viewer-release",
       "configuration": "Release",
       "targets": [
-        "MeshViewer"
+        "MeshViewer",
+        "MRCommonPlugins"
       ],
       "jobs": 8
     },
@@ -82,9 +84,36 @@
       "configurePreset": "viewer-full-release",
       "configuration": "Release",
       "targets": [
-        "MeshViewer"
+        "MeshViewer",
+        "MRCommonPlugins"
       ],
       "jobs": 8
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "viewer-debug-all",
+      "displayName": "Configure+Build MeshViewer (Debug)",
+      "steps": [
+        { "type": "configure", "name": "viewer-debug" },
+        { "type": "build", "name": "viewer-debug-build" }
+      ]
+    },
+    {
+      "name": "viewer-release-all",
+      "displayName": "Configure+Build MeshViewer (Release)",
+      "steps": [
+        { "type": "configure", "name": "viewer-release" },
+        { "type": "build", "name": "viewer-release-build" }
+      ]
+    },
+    {
+      "name": "viewer-full-release-all",
+      "displayName": "Configure+Build MeshViewer (Release, Full IO)",
+      "steps": [
+        { "type": "configure", "name": "viewer-full-release" },
+        { "type": "build", "name": "viewer-full-release-build" }
+      ]
     }
   ]
 }
