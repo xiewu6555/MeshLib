@@ -17,24 +17,63 @@ if(POLICY CMP0144)
   cmake_policy(SET CMP0144 NEW)
 endif()
 
-if(NOT DEFINED ENV{VCPKG_ROOT})
-    set(VCPKG_ROOT "D:/vcpkg")
-else()
-    set(VCPKG_ROOT $ENV{VCPKG_ROOT})
+# 项目独立的 vcpkg 配置 - 避免环境污染
+if(NOT CMAKE_TOOLCHAIN_FILE)
+    # 优先使用项目本地的 vcpkg 安装
+    set(PROJECT_VCPKG_ROOT "${CMAKE_SOURCE_DIR}/vcpkg")
+    
+    if(EXISTS "${PROJECT_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+        message(STATUS "Using project local vcpkg: ${PROJECT_VCPKG_ROOT}")
+        set(CMAKE_TOOLCHAIN_FILE "${PROJECT_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" 
+            CACHE STRING "Vcpkg toolchain file")
+    else()
+        message(STATUS "Project local vcpkg not found at: ${PROJECT_VCPKG_ROOT}")
+        message(STATUS "Please run: git submodule update --init --recursive vcpkg")
+        message(STATUS "Or manually setup vcpkg in the project root")
+        
+        # 回退到全局 vcpkg（如果存在）
+        find_program(VCPKG_EXECUTABLE vcpkg PATHS 
+            "$ENV{VCPKG_ROOT}"
+            "C:/vcpkg" 
+            "D:/vcpkg"
+            PATH_SUFFIXES "vcpkg"
+        )
+        
+        if(VCPKG_EXECUTABLE)
+            get_filename_component(VCPKG_ROOT "${VCPKG_EXECUTABLE}" DIRECTORY)
+            message(WARNING "Falling back to global vcpkg: ${VCPKG_ROOT}")
+            message(WARNING "Consider using project local vcpkg for better isolation")
+            set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" 
+                CACHE STRING "Vcpkg toolchain file")
+        else()
+            message(FATAL_ERROR "vcpkg not found. Please setup project local vcpkg or install globally.")
+        endif()
+    endif()
 endif()
 
-set(VCPKG_ROOT "D:/3DCAM/vcpkg-master/vcpkg-master")
-message(STATUS "VCPKG_ROOT: $ENV{VCPKG_ROOT}")
-set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
-set(CUDAToolkit_ROOT "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.4/")
+# 设置默认的 vcpkg triplet 
+if(NOT VCPKG_TARGET_TRIPLET)
+    if(WIN32)
+        set(VCPKG_TARGET_TRIPLET "x64-windows-meshlib" CACHE STRING "vcpkg target triplet")
+    elseif(APPLE)
+        set(VCPKG_TARGET_TRIPLET "x64-osx" CACHE STRING "vcpkg target triplet")
+    else()
+        set(VCPKG_TARGET_TRIPLET "x64-linux" CACHE STRING "vcpkg target triplet") 
+    endif()
+endif()
 
-# 添加vcpkg安装目录到CMAKE_PREFIX_PATH
-list(APPEND CMAKE_PREFIX_PATH "${VCPKG_ROOT}/installed/x64-windows")
-list(APPEND CMAKE_PREFIX_PATH "${VCPKG_ROOT}/installed/x64-windows/share")
+# 启用 vcpkg manifest 模式（vcpkg.json）
+set(VCPKG_MANIFEST_MODE ON)
+
+# CUDA 支持（可选）
+set(CUDAToolkit_ROOT "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.4/")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
 include(DefaultOptions)
 include(ConfigureVcpkg)
+
+# 包含手动 OpenCASCADE 配置支持
+include(UseManualOpenCASCADE)
 
 IF(NOT MR_EMSCRIPTEN AND NOT APPLE AND EXISTS /usr/bin/time)
   # print compile time of each translation unit in the CSV format (user time, system time, command)

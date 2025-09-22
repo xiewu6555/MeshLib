@@ -1,6 +1,6 @@
 #include "MRToolPathPlugin.h"
 #include <array> // 显式包含array头文件
-#include "../build/MRViewer/MRViewerPluginsList.h"  // 使用相对于源代码根目录的路径
+#include "MRViewerPluginsList.h"  // 由 CMake 在构建目录生成
 #include "MRViewer.h"
 #include "MRViewer/MRRibbonConstants.h"
 #include "MRViewer/MRViewer.h"

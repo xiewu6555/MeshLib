@@ -3,8 +3,6 @@ set(CMAKE_CXX_STANDARD ${MR_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(MeshViewer CXX)
-# 包含运行时依赖拷贝模块
-include(CopyRuntimeDependencies)
 
 # We make this a `MACOSX_BUNDLE` even though we don't package it, solely to unify
 #   the `MR_LOCAL_RESOURCES=1` search path between this and our other apps that actually need to be bundles.
@@ -35,10 +33,6 @@ ELSE() # NOT MR_EMSCRIPTEN
     MRMesh
   )
 ENDIF() # MR_EMSCRIPTEN
-# 配置运行时依赖 DLL 拷贝（仅限 Windows）
-IF(WIN32 AND NOT MR_EMSCRIPTEN)
-  copy_runtime_dependencies(${PROJECT_NAME})
-ENDIF()
 
 install(TARGETS ${PROJECT_NAME} DESTINATION "${MR_BIN_DIR}")
 install(FILES ${LIB_LIST} DESTINATION "${MR_RESOURCES_DIR}")

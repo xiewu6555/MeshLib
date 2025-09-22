@@ -1,0 +1,3 @@
+# vcpkg 默认配置文件
+# 指定默认的 triplet，用于 manifest 模式
+x64-windows

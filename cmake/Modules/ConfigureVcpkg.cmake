@@ -1,5 +1,14 @@
 function(find_vcpkg_root)
     IF(NOT DEFINED VCPKG_ROOT)
+        # 强制优先使用项目本地的 vcpkg，避免环境污染
+        set(LOCAL_VCPKG_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg")
+        IF(EXISTS "${LOCAL_VCPKG_ROOT}/vcpkg.exe" OR EXISTS "${LOCAL_VCPKG_ROOT}/vcpkg")
+            set(VCPKG_ROOT ${LOCAL_VCPKG_ROOT} PARENT_SCOPE)
+            message(STATUS "使用项目本地 vcpkg: ${LOCAL_VCPKG_ROOT}")
+            return()
+        ENDIF()
+        
+        # 如果没有本地 vcpkg，再查找系统的 vcpkg
         IF(WIN32)
             set(VCPKG_PATH_FILE "$ENV{LOCALAPPDATA}/vcpkg/vcpkg.path.txt")
         ELSE()

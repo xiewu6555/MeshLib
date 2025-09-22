@@ -1,0 +1,40 @@
+cmake_minimum_required(VERSION 3.16)
+project(TestMRIOExtras)
+
+# 设置 OpenCASCADE 路径
+set(OpenCASCADE_DIR "F:/Code/OpenProject/MeshLib/thirdparty/opencascade/occt_vc14-64/cmake")
+set(CMAKE_PREFIX_PATH "F:/Code/OpenProject/MeshLib/thirdparty/opencascade/occt_vc14-64")
+
+# 查找 OpenCASCADE
+find_package(OpenCASCADE REQUIRED
+    COMPONENTS
+    FoundationClasses
+    ModelingData
+    ModelingAlgorithms
+    Visualization
+    ApplicationFramework
+    DataExchange
+)
+
+if(OpenCASCADE_FOUND)
+    message(STATUS "✓ 成功找到 OpenCASCADE!")
+    message(STATUS "  版本: ${OpenCASCADE_VERSION}")
+    message(STATUS "  安装目录: ${OpenCASCADE_INSTALL_PREFIX}")
+    message(STATUS "  库目录: ${OpenCASCADE_LIBRARY_DIR}")
+    message(STATUS "  头文件目录: ${OpenCASCADE_INCLUDE_DIR}")
+    
+    # 检查必需的库
+    set(REQUIRED_LIBS TKernel TKBRep TKMath TKMesh TKDESTEP TKSTEP TKTopAlgo TKXSBase)
+    foreach(LIB ${REQUIRED_LIBS})
+        list(FIND OpenCASCADE_LIBRARIES ${LIB} LIB_FOUND)
+        if(NOT LIB_FOUND EQUAL -1)
+            message(STATUS "  ✓ 找到库: ${LIB}")
+        else()
+            message(STATUS "  ✗ 缺少库: ${LIB}")
+        endif()
+    endforeach()
+    
+    message(STATUS "STEP 格式支持验证成功！")
+else()
+    message(FATAL_ERROR "✗ 找不到 OpenCASCADE")
+endif()

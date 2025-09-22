@@ -1,0 +1,97 @@
+{
+  "name": "meshlib",
+  "version": "1.0.0",
+  "description": "MeshLib - 开源3D数据处理SDK，支持网格处理、布尔运算、孔洞填补等高级算法",
+  "homepage": "https://meshlib.io",
+  "license": "MIT",
+  "supports": "windows & linux & osx",
+  "dependencies": [
+    "boost-algorithm",
+    "boost-dynamic-bitset",
+    "boost-functional", 
+    "boost-integer",
+    "boost-move",
+    "boost-multiprecision",
+    "boost-program-options",
+    "boost-range",
+    "boost-serialization",
+    "boost-signals2",
+    "boost-stacktrace",
+    "boost-url",
+    "eigen3",
+    "freetype",
+    "glfw3",
+    "gtest",
+    "jsoncpp",
+    "libjpeg-turbo",
+    "libzip",
+    "spdlog",
+    "tiff",
+    "tinyxml2",
+    "fmt",
+    "tbb",
+    "tl-expected",
+    "libe57format",
+    "xerces-c",
+    "gdcm",
+    "cpr",
+    "glad",
+    "hidapi",
+    "libharu",
+    "tinygltf",
+    "openvdb"
+  ],
+  "features": {
+    "opencascade": {
+      "description": "启用 OpenCASCADE 支持（CAD几何建模）",
+      "dependencies": [
+        {
+          "name": "opencascade",
+          "platform": "windows"
+        },
+        {
+          "name": "opencascade-minimal",
+          "platform": "linux"
+        }
+      ]
+    },
+    "python": {
+      "description": "启用 Python 绑定支持",
+      "dependencies": [
+        {
+          "name": "python3",
+          "platform": "windows"
+        }
+      ]
+    },
+    "gui": {
+      "description": "启用图形用户界面支持",
+      "dependencies": [
+        {
+          "name": "gtk3",
+          "platform": "linux"
+        }
+      ]
+    },
+    "compression": {
+      "description": "启用压缩库支持",
+      "dependencies": [
+        "clip"
+      ]
+    },
+    "threading": {
+      "description": "启用线程库支持",
+      "dependencies": [
+        "tbb",
+        "tl-expected"
+      ]
+    },
+    "mesh-formats": {
+      "description": "启用额外的网格格式支持",
+      "dependencies": [
+        "openctm"
+      ]
+    }
+  },
+  "builtin-baseline": "10b7a178346f3f0abef60cecd5130e295afd8da4"
+}

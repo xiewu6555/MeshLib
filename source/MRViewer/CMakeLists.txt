@@ -30,6 +30,9 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES} ${OBJCPP_SOURCES} ${HEADERS})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config_cmake.h.in ${CMAKE_CURRENT_SOURCE_DIR}/config_cmake.h)
 
+# 确保能够包含由 configure_file 生成在二进制目录的头文件
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+
 set(MRVIEWER_OPTIONAL_DEPENDENCIES "")
 
 IF(NOT MRVIEWER_NO_VOXELS)

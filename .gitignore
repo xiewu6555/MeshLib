@@ -42,3 +42,14 @@ wheelhouse/*
 /source/MeshLibC2/src
 /source/MeshLibC2/temp
 compile_commands.json
+
+# vcpkg 本地安装目录（项目独立配置）
+vcpkg/
+vcpkg_installed/
+
+# 临时和缓存文件
+.cache/
+*_cache/
+thirdparty/
+build_debug/
+thirdparty_build/

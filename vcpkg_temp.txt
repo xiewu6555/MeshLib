@@ -1,0 +1,2 @@
+libe57format
+xerces-c

@@ -17,15 +17,16 @@ if errorlevel 1 (
     echo "Vcpkg binary cache (if available) will be downloaded from S3"
 )
 
-REM Detect vcpkg path
-for /f "delims=" %%i in ('where vcpkg 2^>nul') do set vcpkg_path=%%~dpi
-if not defined vcpkg_path (
-    echo vcpkg not found. Setting VCPKG_TAG to "no-tag".
-    set VCPKG_TAG=no-tag
-) else (
+REM Use local project vcpkg path
+set "vcpkg_path=%~dp0..\vcpkg\"
+if exist "%vcpkg_path%vcpkg.exe" (
+    echo Found local vcpkg: %vcpkg_path%
     REM Extract version number (YYYY-MM-DD-hash) and cut first 10 characters
-    for /f "tokens=6" %%V in ('vcpkg version 2^>nul ^| findstr /R "vcpkg package management program version [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]"') do set FULL_VCPKG_TAG=%%V
+    for /f "tokens=6" %%V in ('"%vcpkg_path%vcpkg.exe" version 2^>nul ^| findstr /R "vcpkg package management program version [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]"') do set FULL_VCPKG_TAG=%%V
     set VCPKG_TAG=!FULL_VCPKG_TAG:~0,10!
+) else (
+    echo Local vcpkg not found at %vcpkg_path%. Setting VCPKG_TAG to "no-tag".
+    set VCPKG_TAG=no-tag
 )
 
 echo Using vcpkg version: !VCPKG_TAG!
@@ -60,10 +61,10 @@ for /f "delims=" %%i in ('type "%~dp0..\requirements\windows.txt"') do (
 )
 
 REM Install vcpkg core dependencies
-vcpkg install vcpkg-cmake vcpkg-cmake-config --host-triplet %VCPKG_DEFAULT_TRIPLET% --overlay-triplets "%~dp0vcpkg\triplets" --debug --x-abi-tools-use-exact-versions || goto :error
+"%vcpkg_path%vcpkg.exe" install vcpkg-cmake vcpkg-cmake-config --triplet %VCPKG_DEFAULT_TRIPLET% --overlay-triplets "%~dp0vcpkg\triplets" --debug --x-abi-tools-use-exact-versions || goto :error
 
 REM Install all required dependencies
-vcpkg install !packages! --host-triplet %VCPKG_DEFAULT_TRIPLET% --overlay-triplets "%~dp0vcpkg\triplets" --debug --x-abi-tools-use-exact-versions || goto :error
+"%vcpkg_path%vcpkg.exe" install !packages! --triplet %VCPKG_DEFAULT_TRIPLET% --overlay-triplets "%~dp0vcpkg\triplets" --debug --x-abi-tools-use-exact-versions || goto :error
 
 endlocal
 goto :EOF
