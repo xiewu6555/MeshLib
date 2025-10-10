@@ -1,5 +1,6 @@
 #include "MRBase64.h"
 #include "MRTimer.h"
+#include <boost/throw_exception.hpp>
 #include <boost/archive/iterators/binary_from_base64.hpp>
 #include <boost/archive/iterators/base64_from_binary.hpp>
 #include <boost/archive/iterators/transform_width.hpp>

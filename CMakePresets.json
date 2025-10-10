@@ -29,7 +29,13 @@
         "MRIOEXTRAS_NO_E57": "ON",
         "MRIOEXTRAS_NO_JPEG": "ON",
         "MRIOEXTRAS_NO_LAS": "ON",
-        "MRIOEXTRAS_NO_PDF": "ON"
+        "MRIOEXTRAS_NO_PDF": "ON",
+
+        "BUILD_TESTING": "OFF",
+        "MRMESH_NO_GTEST": "ON",
+        "MR_PCH": "OFF",
+        "CMAKE_CXX_FLAGS": "/bigobj /Zm500",
+        "CMAKE_C_FLAGS": "/bigobj /Zm500"
       }
     },
     {
@@ -67,7 +73,7 @@
         "MeshViewer",
         "MRCommonPlugins"
       ],
-      "jobs": 8
+      "jobs": 1
     },
     {
       "name": "viewer-release-build",

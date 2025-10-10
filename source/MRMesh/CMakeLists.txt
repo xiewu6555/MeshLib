@@ -60,7 +60,7 @@ IF(EMSCRIPTEN)
 ENDIF()
 
 IF(NOT MR_EMSCRIPTEN)
-  find_package(Boost COMPONENTS REQUIRED)
+  find_package(Boost COMPONENTS system serialization REQUIRED)
 ELSE()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_BOOST_HEADERS=1")
 ENDIF()
@@ -73,6 +73,10 @@ IF(NOT EMSCRIPTEN)
 ELSE()
   target_compile_definitions(${PROJECT_NAME} PUBLIC SPDLOG_FMT_EXTERNAL)
 ENDIF()
+
+# 不使用 BOOST_EXCEPTION_DISABLE，因为它与 boost::serialization 不兼容
+# 改为依赖 Boost 的默认 exception 处理机制
+
 
 IF(APPLE OR MR_EMSCRIPTEN)
   #jpeg-turbo is keg-only, which means it was not symlinked into /opt/homebrew,
@@ -94,6 +98,8 @@ IF(APPLE OR MR_EMSCRIPTEN)
       spdlog
       zip
       Boost::boost
+      Boost::system
+      Boost::serialization
       jsoncpp
       fmt
       tbb
@@ -136,6 +142,8 @@ ELSEIF(WIN32 OR MESHLIB_USE_VCPKG)
     spdlog::spdlog
     libzip::zip
     Boost::boost
+    Boost::system
+    Boost::serialization
     JsonCpp::JsonCpp
     TBB::tbb
     ${CMAKE_DL_LIBS}
@@ -156,6 +164,8 @@ ELSE()
     spdlog
     zip
     Boost::boost
+    Boost::system
+    Boost::serialization
     JsonCpp::JsonCpp
     tbb
     ${CMAKE_DL_LIBS}

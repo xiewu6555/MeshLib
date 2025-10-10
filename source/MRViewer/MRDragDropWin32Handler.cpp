@@ -8,6 +8,9 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 
+// Include Windows.h first to ensure architecture macros are properly defined
+#include <Windows.h>
+
 #pragma warning( push )
 #pragma warning( disable: 5204 )
 #include <oleidl.h>

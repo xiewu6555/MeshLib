@@ -13,6 +13,14 @@ IF(MR_EMSCRIPTEN)
 ENDIF()
 
 IF(APPLE)
+  find_package(nanobench CONFIG REQUIRED)
+  add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/fcl ${CMAKE_BINARY_DIR}/fcl EXCLUDE_FROM_ALL)
+
+  # 禁用 FCL 的警告作为错误
+  if(TARGET fcl)
+    target_compile_options(fcl PRIVATE -Wno-error)
+  endif()
+
   target_link_libraries(${PROJECT_NAME} PRIVATE
     MRMesh
     MRIOExtras
@@ -23,6 +31,8 @@ IF(APPLE)
     spdlog
     OpenVDB
     tbb
+    nanobench::nanobench
+    fcl
     ${CMAKE_DL_LIBS}
   )
 ELSE()
@@ -43,6 +53,21 @@ ELSE()
   ELSEIF(WIN32 OR MESHLIB_USE_VCPKG)
     find_package(GTest REQUIRED)
     find_package(OpenVDB REQUIRED)
+    find_package(nanobench CONFIG REQUIRED)
+
+    # 添加 FCL 子模块
+    add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/fcl ${CMAKE_BINARY_DIR}/fcl EXCLUDE_FROM_ALL)
+
+    # 禁用 FCL 的警告作为错误
+    if(TARGET fcl)
+      target_compile_options(fcl PRIVATE /wd4506 /wd4661 /wd4267)
+    endif()
+
+    # 添加 CCD include 路径以便 MRTest 可以找到 ccd/ccd.h
+    target_include_directories(${PROJECT_NAME} PRIVATE
+      ${CMAKE_SOURCE_DIR}/thirdparty/libccd_install/include
+    )
+
     target_link_libraries(${PROJECT_NAME} PRIVATE
       MRMesh
       MRIOExtras
@@ -53,9 +78,19 @@ ELSE()
       spdlog::spdlog
       OpenVDB::openvdb
       TBB::tbb
+      nanobench::nanobench
+      fcl
       ${CMAKE_DL_LIBS}
     )
   ELSE()
+    find_package(nanobench CONFIG REQUIRED)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/fcl ${CMAKE_BINARY_DIR}/fcl EXCLUDE_FROM_ALL)
+
+    # 禁用 FCL 的警告作为错误
+    if(TARGET fcl)
+      target_compile_options(fcl PRIVATE -Wno-error)
+    endif()
+
     target_link_libraries(${PROJECT_NAME} PRIVATE
       MRMesh
       MRIOExtras
@@ -66,6 +101,8 @@ ELSE()
       spdlog
       openvdb
       tbb
+      nanobench::nanobench
+      fcl
       ${CMAKE_DL_LIBS}
     )
   ENDIF()

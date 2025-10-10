@@ -347,7 +347,7 @@ void Palette::makeUniformLabels_( std::vector<Palette::Label>& labels ) const
     }
 
     // Force add the zero label.
-    labels.emplace_back( 0.5, "0" ).isZero = true;
+    labels.emplace_back( 0.5f, "0" ).isZero = true;
 
     sortLabels_( labels );
 }

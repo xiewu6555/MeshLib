@@ -39,7 +39,8 @@
     "hidapi",
     "libharu",
     "tinygltf",
-    "openvdb"
+    "openvdb",
+    "nanobench"
   ],
   "features": {
     "opencascade": {

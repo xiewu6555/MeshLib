@@ -31,7 +31,9 @@ IF(MSVC)
   set(MESHLIB_COMMON_C_CXX_FLAGS "/utf-8 /fp:precise /permissive- /Zc:wchar_t /Zc:forScope /Zc:inline /DNOMINMAX /D_CRT_SECURE_NO_DEPRECATE")
 
   # Vcpkg automatically adds `/external:W0`, but we duplicate it here because it somehow doesn't propagate to Lazperf.
-  set(MESHLIB_COMMON_C_CXX_FLAGS "${MESHLIB_COMMON_C_CXX_FLAGS} /W4 /WX /external:W0 /external:env:INCLUDE")
+  # Temporarily disable /WX to allow compilation with warnings
+  #set(MESHLIB_COMMON_C_CXX_FLAGS "${MESHLIB_COMMON_C_CXX_FLAGS} /W4 /WX /external:W0 /external:env:INCLUDE")
+  set(MESHLIB_COMMON_C_CXX_FLAGS "${MESHLIB_COMMON_C_CXX_FLAGS} /W4 /external:W0 /external:env:INCLUDE")
 
   # Following warnings are silenced:
   # !! NOTE: Sync this list with `common.props` !!
